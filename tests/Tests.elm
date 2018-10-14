@@ -10,6 +10,7 @@ import Main
         , OrderBy(..)
         , OrderField(..)
         , SortCondition
+        , changeSortCondition
         , infinity
         , monster2ViewModel
         , sortCondition2ViewModel
@@ -60,6 +61,20 @@ monstersSortTest testCaseName sortCondition monsters sortedMonsters =
 
                 expected =
                     sortedMonsters
+            in
+            Expect.equal actual expected
+
+
+changeSortConditionTest : TestCaseName -> OrderField -> Maybe SortCondition -> Maybe SortCondition -> Test
+changeSortConditionTest testCaseName orderField maybeSortCondition maybeChangedSortCondition =
+    test testCaseName <|
+        \_ ->
+            let
+                actual =
+                    changeSortCondition orderField maybeSortCondition
+
+                expected =
+                    maybeChangedSortCondition
             in
             Expect.equal actual expected
 
@@ -144,5 +159,25 @@ suite =
                 , Monster "おおがらす" 9 0 10 6
                 , Monster "さまようよろい" 55 0 47 10
                 ]
+            , changeSortConditionTest
+                "初期状態からHPのソートボタンを押すと、HPが昇順ソートになる"
+                Hp
+                Nothing
+                (Just <| SortCondition Hp Asc)
+            , changeSortConditionTest
+                "HPが昇順ソートされている状態でHPのソートボタンを押すと、HPが降順ソートになる"
+                Hp
+                (Just <| SortCondition Hp Asc)
+                (Just <| SortCondition Hp Dsc)
+            , changeSortConditionTest
+                "HPが降順ソートされている状態でHPのソートボタンを押すと、初期状態になる"
+                Hp
+                (Just <| SortCondition Hp Dsc)
+                Nothing
+            , changeSortConditionTest
+                "HPが昇順ソートされている状態でMPのソートボタンを押すと、MPの昇順ソートになる"
+                Mp
+                (Just <| SortCondition Hp Dsc)
+                (Just <| SortCondition Mp Asc)
             ]
         ]

@@ -6,6 +6,7 @@ module Main exposing
     , OrderBy(..)
     , OrderField(..)
     , SortCondition
+    , changeSortCondition
     , infinity
     , monster2ViewModel
     , monsterViewModel2View
@@ -50,23 +51,28 @@ type Msg
     = Sort OrderField
 
 
+changeSortCondition : OrderField -> Maybe SortCondition -> Maybe SortCondition
+changeSortCondition targetOrderField maybeSortCondition =
+    case maybeSortCondition of
+        Just { orderField, orderBy } ->
+            if targetOrderField == orderField && orderBy == Dsc then
+                Nothing
+
+            else if targetOrderField /= orderField then
+                Just <| SortCondition targetOrderField Asc
+
+            else
+                Just <| SortCondition targetOrderField Dsc
+
+        Nothing ->
+            Just <| SortCondition targetOrderField Asc
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ maybeSortCondition } as model) =
     case msg of
-        Sort ordf ->
-            case maybeSortCondition of
-                Just { orderField, orderBy } ->
-                    if ordf == orderField && orderBy == Dsc then
-                        ( { model | maybeSortCondition = Nothing }, Cmd.none )
-
-                    else if ordf /= orderField then
-                        ( { model | maybeSortCondition = Just <| SortCondition ordf Asc }, Cmd.none )
-
-                    else
-                        ( { model | maybeSortCondition = Just <| SortCondition ordf Dsc }, Cmd.none )
-
-                Nothing ->
-                    ( { model | maybeSortCondition = Just <| SortCondition ordf Asc }, Cmd.none )
+        Sort targetOrderField ->
+            ( { model | maybeSortCondition = changeSortCondition targetOrderField maybeSortCondition }, Cmd.none )
 
 
 type alias Monster =
