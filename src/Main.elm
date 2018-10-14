@@ -7,6 +7,7 @@ module Main exposing
     , OrderField(..)
     , SortCondition
     , changeSortCondition
+    , createMonstersViewModel
     , infinity
     , monster2ViewModel
     , monsterViewModel2View
@@ -232,6 +233,16 @@ sortCondition2ViewModel { orderField, orderBy } =
 ---- VIEW ----
 
 
+createMonstersViewModel : List Monster -> Maybe SortCondition -> List MonsterViewModel
+createMonstersViewModel monsters maybeSortCondition =
+    case maybeSortCondition of
+        Just sortCondition ->
+            monsters |> sortMonsters sortCondition |> List.map monster2ViewModel
+
+        Nothing ->
+            monsters |> List.map monster2ViewModel
+
+
 view : Model -> Html Msg
 view { monsters, maybeSortCondition } =
     let
@@ -244,12 +255,7 @@ view { monsters, maybeSortCondition } =
                     defaultHeaderViewModel |> headerViewModel2View
 
         monstersView =
-            case maybeSortCondition of
-                Just sortCondition ->
-                    monsters |> sortMonsters sortCondition |> List.map monster2ViewModel |> List.map monsterViewModel2View
-
-                Nothing ->
-                    monsters |> List.map monster2ViewModel |> List.map monsterViewModel2View
+            maybeSortCondition |> createMonstersViewModel monsters |> List.map monsterViewModel2View
     in
     table []
         [ headerView

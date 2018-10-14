@@ -11,6 +11,7 @@ import Main
         , OrderField(..)
         , SortCondition
         , changeSortCondition
+        , createMonstersViewModel
         , infinity
         , monster2ViewModel
         , sortCondition2ViewModel
@@ -179,5 +180,55 @@ suite =
                 Mp
                 (Just <| SortCondition Hp Dsc)
                 (Just <| SortCondition Mp Asc)
+            , test "デフォルトの並びのモンスターデータが、HPソートボタンを押されたことにより、HP昇順ソートの並びの図鑑になる" <|
+                \_ ->
+                    let
+                        defaultMonsters =
+                            [ Monster "スライム" 8 0 9 4
+                            , Monster "おおがらす" 9 0 10 6
+                            , Monster "さまようよろい" 55 0 47 10
+                            , Monster "ドルイド" 35 10 55 29
+                            , Monster "はぐれメタル" 6 infinity 55 150
+                            , Monster "ゾーマ" 4700 infinity 360 80
+                            ]
+
+                        actual =
+                            Nothing |> changeSortCondition Hp |> createMonstersViewModel defaultMonsters
+
+                        expected =
+                            [ MonsterViewModel "はぐれメタル" "6" "∞" "55" "150"
+                            , MonsterViewModel "スライム" "8" "0" "9" "4"
+                            , MonsterViewModel "おおがらす" "9" "0" "10" "6"
+                            , MonsterViewModel "ドルイド" "35" "10" "55" "29"
+                            , MonsterViewModel "さまようよろい" "55" "0" "47" "10"
+                            , MonsterViewModel "ゾーマ" "4700" "∞" "360" "80"
+                            ]
+                    in
+                    Expect.equal actual expected
+            , test "「HPの昇順ソート」がされている状態で、HPソートボタンを押されたことにより、「HP降順ソート」の並びの図鑑になる" <|
+                \_ ->
+                    let
+                        defaultMonsters =
+                            [ Monster "スライム" 8 0 9 4
+                            , Monster "おおがらす" 9 0 10 6
+                            , Monster "さまようよろい" 55 0 47 10
+                            , Monster "ドルイド" 35 10 55 29
+                            , Monster "はぐれメタル" 6 infinity 55 150
+                            , Monster "ゾーマ" 4700 infinity 360 80
+                            ]
+
+                        actual =
+                            (Just <| SortCondition Hp Asc) |> changeSortCondition Hp |> createMonstersViewModel defaultMonsters
+
+                        expected =
+                            [ MonsterViewModel "ゾーマ" "4700" "∞" "360" "80"
+                            , MonsterViewModel "さまようよろい" "55" "0" "47" "10"
+                            , MonsterViewModel "ドルイド" "35" "10" "55" "29"
+                            , MonsterViewModel "おおがらす" "9" "0" "10" "6"
+                            , MonsterViewModel "スライム" "8" "0" "9" "4"
+                            , MonsterViewModel "はぐれメタル" "6" "∞" "55" "150"
+                            ]
+                    in
+                    Expect.equal actual expected
             ]
         ]
