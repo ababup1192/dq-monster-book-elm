@@ -82,20 +82,53 @@ zoma =
     Monster "ゾーマ" 4700 infinity 360 80
 
 
+ascComparison a b =
+    case compare a b of
+        LT ->
+            LT
+
+        EQ ->
+            EQ
+
+        GT ->
+            GT
+
+
+dscComparison a b =
+    case compare a b of
+        LT ->
+            GT
+
+        EQ ->
+            EQ
+
+        GT ->
+            LT
+
+
 sortMonsters : SortCondition -> List Monster -> List Monster
 sortMonsters { orderField, orderBy } monsters =
+    let
+        comparison f m1 m2 =
+            case orderBy of
+                Asc ->
+                    ascComparison (f m1) (f m2)
+
+                Dsc ->
+                    dscComparison (f m1) (f m2)
+    in
     case orderField of
         Hp ->
-            List.sortBy (\monster -> monster.hp) monsters
+            List.sortWith (comparison .hp) monsters
 
         Mp ->
-            List.sortBy (\monster -> monster.mp) monsters
+            List.sortWith (comparison .mp) monsters
 
         Attack ->
-            List.sortBy (\monster -> monster.attack) monsters
+            List.sortWith (comparison .attack) monsters
 
         Agility ->
-            List.sortBy (\monster -> monster.agility) monsters
+            List.sortWith (comparison .agility) monsters
 
 
 type alias MonsterViewModel =
