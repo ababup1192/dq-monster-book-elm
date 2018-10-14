@@ -105,5 +105,28 @@ suite =
                             ]
                     in
                     Expect.equal actual expected
+            , test "HPで降順ソート！" <|
+                \_ ->
+                    let
+                        actual =
+                            sortMonsters (SortCondition Hp Dsc)
+                                [ Monster "スライム" 8 0 9 4
+                                , Monster "おおがらす" 9 0 10 6
+                                , Monster "さまようよろい" 55 0 47 10
+                                , Monster "ドルイド" 35 10 55 29
+                                , Monster "はぐれメタル" 6 infinity 55 150
+                                , Monster "ゾーマ" 4700 infinity 360 80
+                                ]
+
+                        expected =
+                            [ Monster "ゾーマ" 4700 infinity 360 80
+                            , Monster "さまようよろい" 55 0 47 10
+                            , Monster "ドルイド" 35 10 55 29
+                            , Monster "おおがらす" 9 0 10 6
+                            , Monster "スライム" 8 0 9 4
+                            , Monster "はぐれメタル" 6 infinity 55 150
+                            ]
+                    in
+                    Expect.equal actual expected
             ]
         ]
