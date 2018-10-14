@@ -216,7 +216,7 @@ view { monsters, sortCondition } =
             sortCondition |> sortCondition2ViewModel |> headerViewModel2View
 
         monstersView =
-            monsters |> List.map monster2ViewModel |> List.map monsterViewModel2View
+            monsters |> sortMonsters sortCondition |> List.map monster2ViewModel |> List.map monsterViewModel2View
     in
     table []
         [ headerView
