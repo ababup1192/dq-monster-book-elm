@@ -132,10 +132,10 @@ type alias HeaderViewModel =
 
 sortCondition2ViewModel : SortCondition -> HeaderViewModel
 sortCondition2ViewModel { orderField, orderBy } =
-    { hp = { active = "", arrow = "" }
-    , mp = { active = "", arrow = "" }
-    , attack = { active = "", arrow = "" }
-    , agility = { active = "", arrow = "" }
+    { hp = { active = "active", arrow = "arrow dsc" }
+    , mp = { active = "", arrow = "arrow asc" }
+    , attack = { active = "", arrow = "arrow asc" }
+    , agility = { active = "", arrow = "arrow asc" }
     }
 
 
