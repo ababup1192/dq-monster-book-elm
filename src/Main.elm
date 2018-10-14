@@ -16,6 +16,7 @@ module Main exposing
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 
 
 
@@ -23,14 +24,14 @@ import Html.Attributes exposing (..)
 
 
 type alias Model =
-    { monsters : List Monster, sortCondition : SortCondition }
+    { monsters : List Monster, maybeSortCondition : Maybe SortCondition }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { monsters =
             [ slime, ogarasu, samayouYoroi, druido, hagreMetal, zoma ]
-      , sortCondition = SortCondition Hp Asc
+      , maybeSortCondition = Nothing
       }
     , Cmd.none
     )
@@ -46,12 +47,26 @@ infinity =
 
 
 type Msg
-    = NoOp
+    = Sort OrderField
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    ( model, Cmd.none )
+update msg ({ maybeSortCondition } as model) =
+    case msg of
+        Sort ordf ->
+            case maybeSortCondition of
+                Just { orderField, orderBy } ->
+                    if ordf == orderField && orderBy == Dsc then
+                        ( { model | maybeSortCondition = Nothing }, Cmd.none )
+
+                    else if ordf /= orderField then
+                        ( { model | maybeSortCondition = Just <| SortCondition ordf Asc }, Cmd.none )
+
+                    else
+                        ( { model | maybeSortCondition = Just <| SortCondition ordf Dsc }, Cmd.none )
+
+                Nothing ->
+                    ( { model | maybeSortCondition = Just <| SortCondition ordf Asc }, Cmd.none )
 
 
 type alias Monster =
@@ -173,16 +188,18 @@ type alias HeaderViewModel =
     { hp : HeaderFieldViewModel, mp : HeaderFieldViewModel, attack : HeaderFieldViewModel, agility : HeaderFieldViewModel }
 
 
+defaultHeaderViewModel : HeaderViewModel
+defaultHeaderViewModel =
+    { hp = { active = "", arrow = "arrow asc" }
+    , mp = { active = "", arrow = "arrow asc" }
+    , attack = { active = "", arrow = "arrow asc" }
+    , agility = { active = "", arrow = "arrow asc" }
+    }
+
+
 sortCondition2ViewModel : SortCondition -> HeaderViewModel
 sortCondition2ViewModel { orderField, orderBy } =
     let
-        defaultViewModel =
-            { hp = { active = "", arrow = "arrow asc" }
-            , mp = { active = "", arrow = "arrow asc" }
-            , attack = { active = "", arrow = "arrow asc" }
-            , agility = { active = "", arrow = "arrow asc" }
-            }
-
         orderBy2Arrow =
             case orderBy of
                 Asc ->
@@ -193,16 +210,16 @@ sortCondition2ViewModel { orderField, orderBy } =
     in
     case orderField of
         Hp ->
-            { defaultViewModel | hp = { active = "active", arrow = orderBy2Arrow } }
+            { defaultHeaderViewModel | hp = { active = "active", arrow = orderBy2Arrow } }
 
         Mp ->
-            { defaultViewModel | mp = { active = "active", arrow = orderBy2Arrow } }
+            { defaultHeaderViewModel | mp = { active = "active", arrow = orderBy2Arrow } }
 
         Attack ->
-            { defaultViewModel | attack = { active = "active", arrow = orderBy2Arrow } }
+            { defaultHeaderViewModel | attack = { active = "active", arrow = orderBy2Arrow } }
 
         Agility ->
-            { defaultViewModel | agility = { active = "active", arrow = orderBy2Arrow } }
+            { defaultHeaderViewModel | agility = { active = "active", arrow = orderBy2Arrow } }
 
 
 
@@ -210,13 +227,23 @@ sortCondition2ViewModel { orderField, orderBy } =
 
 
 view : Model -> Html Msg
-view { monsters, sortCondition } =
+view { monsters, maybeSortCondition } =
     let
         headerView =
-            sortCondition |> sortCondition2ViewModel |> headerViewModel2View
+            case maybeSortCondition of
+                Just sortCondition ->
+                    sortCondition |> sortCondition2ViewModel |> headerViewModel2View
+
+                Nothing ->
+                    defaultHeaderViewModel |> headerViewModel2View
 
         monstersView =
-            monsters |> sortMonsters sortCondition |> List.map monster2ViewModel |> List.map monsterViewModel2View
+            case maybeSortCondition of
+                Just sortCondition ->
+                    monsters |> sortMonsters sortCondition |> List.map monster2ViewModel |> List.map monsterViewModel2View
+
+                Nothing ->
+                    monsters |> List.map monster2ViewModel |> List.map monsterViewModel2View
     in
     table []
         [ headerView
@@ -230,19 +257,19 @@ headerViewModel2View { hp, mp, attack, agility } =
         [ tr []
             [ th []
                 [ text "なまえ" ]
-            , th [ class hp.active ]
+            , th [ class hp.active, onClick <| Sort Hp ]
                 [ text "HP"
                 , span [ class hp.arrow ] []
                 ]
-            , th [ class mp.active ]
+            , th [ class mp.active, onClick <| Sort Mp ]
                 [ text "MP"
                 , span [ class mp.arrow ] []
                 ]
-            , th [ class attack.active ]
+            , th [ class attack.active, onClick <| Sort Attack ]
                 [ text "こうげきりょく"
                 , span [ class attack.arrow ] []
                 ]
-            , th [ class agility.active ]
+            , th [ class agility.active, onClick <| Sort Agility ]
                 [ text "すばやさ"
                 , span [ class agility.arrow ] []
                 ]
