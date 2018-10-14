@@ -83,15 +83,7 @@ zoma =
 
 
 ascComparison a b =
-    case compare a b of
-        LT ->
-            LT
-
-        EQ ->
-            EQ
-
-        GT ->
-            GT
+    compare a b
 
 
 dscComparison a b =
