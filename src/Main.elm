@@ -1,4 +1,4 @@
-module Main exposing (Model, Msg(..), init, main, update, view)
+module Main exposing (Model, Monster, MonsterViewModel, Msg(..), druido, hagreMetal, infinity, init, main, monster2ViewModel, monsterViewModel2View, ogarasu, samayouYoroi, slime, subscriptions, update, view, zoma)
 
 import Browser
 import Html exposing (..)
@@ -66,6 +66,11 @@ zoma =
 
 type alias MonsterViewModel =
     { name : String, hp : String, mp : String, attack : String, agility : String }
+
+
+monster2ViewModel : Monster -> MonsterViewModel
+monster2ViewModel { name, hp, mp, attack, agility } =
+    { name = "", hp = "", mp = "", attack = "", agility = "" }
 
 
 
