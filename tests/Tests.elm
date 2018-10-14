@@ -2,7 +2,7 @@ module Tests exposing (suite)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
-import Main exposing (Monster, MonsterViewModel, monster2ViewModel)
+import Main exposing (Monster, MonsterViewModel, infinity, monster2ViewModel)
 import Test exposing (..)
 
 
@@ -19,6 +19,16 @@ suite =
 
                         expected =
                             MonsterViewModel "スライム" "8" "0" "9" "4"
+                    in
+                    Expect.equal actual expected
+            , test "はぐれメタル は ViewModel になった！" <|
+                \_ ->
+                    let
+                        actual =
+                            monster2ViewModel <| Monster "はぐれメタル" 6 infinity 55 150
+
+                        expected =
+                            MonsterViewModel "はぐれメタル" "6" "∞" "55" "150"
                     in
                     Expect.equal actual expected
             ]
