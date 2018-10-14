@@ -10,6 +10,7 @@ module Main exposing
     , monster2ViewModel
     , monsterViewModel2View
     , sortCondition2ViewModel
+    , sortMonsters
     )
 
 import Browser
@@ -79,6 +80,11 @@ hagreMetal =
 
 zoma =
     Monster "ゾーマ" 4700 infinity 360 80
+
+
+sortMonsters : SortCondition -> List Monster -> List Monster
+sortMonsters { orderField, orderBy } monsters =
+    monsters
 
 
 type alias MonsterViewModel =
