@@ -70,7 +70,20 @@ type alias MonsterViewModel =
 
 monster2ViewModel : Monster -> MonsterViewModel
 monster2ViewModel { name, hp, mp, attack, agility } =
-    { name = "", hp = "", mp = "", attack = "", agility = "" }
+    let
+        hpText =
+            String.fromInt hp
+
+        mpText =
+            String.fromFloat mp
+
+        attackText =
+            String.fromInt attack
+
+        agilityText =
+            String.fromInt agility
+    in
+    { name = name, hp = hpText, mp = mpText, attack = attackText, agility = agilityText }
 
 
 
