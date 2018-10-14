@@ -1,4 +1,16 @@
-module Main exposing (Model, Monster, MonsterViewModel, Msg(..), druido, hagreMetal, infinity, init, main, monster2ViewModel, monsterViewModel2View, ogarasu, samayouYoroi, slime, subscriptions, update, view, zoma)
+module Main exposing
+    ( HeaderViewModel
+    , Model
+    , Monster
+    , MonsterViewModel
+    , OrderBy(..)
+    , OrderField(..)
+    , SortCondition
+    , infinity
+    , monster2ViewModel
+    , monsterViewModel2View
+    , sortCondition2ViewModel
+    )
 
 import Browser
 import Html exposing (..)
@@ -94,12 +106,37 @@ monster2ViewModel { name, hp, mp, attack, agility } =
     { name = name, hp = hpText, mp = mpText, attack = attackText, agility = agilityText }
 
 
+type OrderField
+    = Hp
+    | Mp
+    | Attack
+    | Agility
+
+
+type OrderBy
+    = Asc
+    | Dsc
+
+
+type alias SortCondition =
+    { orderField : OrderField, orderBy : OrderBy }
+
+
 type alias HeaderFieldViewModel =
     { active : String, arrow : String }
 
 
 type alias HeaderViewModel =
     { hp : HeaderFieldViewModel, mp : HeaderFieldViewModel, attack : HeaderFieldViewModel, agility : HeaderFieldViewModel }
+
+
+sortCondition2ViewModel : SortCondition -> HeaderViewModel
+sortCondition2ViewModel { orderField, orderBy } =
+    { hp = { active = "", arrow = "" }
+    , mp = { active = "", arrow = "" }
+    , attack = { active = "", arrow = "" }
+    , agility = { active = "", arrow = "" }
+    }
 
 
 
