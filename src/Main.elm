@@ -132,11 +132,43 @@ type alias HeaderViewModel =
 
 sortCondition2ViewModel : SortCondition -> HeaderViewModel
 sortCondition2ViewModel { orderField, orderBy } =
-    { hp = { active = "active", arrow = "arrow dsc" }
-    , mp = { active = "", arrow = "arrow asc" }
-    , attack = { active = "", arrow = "arrow asc" }
-    , agility = { active = "", arrow = "arrow asc" }
-    }
+    let
+        orderBy2Arrow =
+            case orderBy of
+                Asc ->
+                    "arrow asc"
+
+                Dsc ->
+                    "arrow dsc"
+    in
+    case orderField of
+        Hp ->
+            { hp = { active = "active", arrow = orderBy2Arrow }
+            , mp = { active = "", arrow = "arrow asc" }
+            , attack = { active = "", arrow = "arrow asc" }
+            , agility = { active = "", arrow = "arrow asc" }
+            }
+
+        Mp ->
+            { hp = { active = "", arrow = "arrow asc" }
+            , mp = { active = "active", arrow = orderBy2Arrow }
+            , attack = { active = "", arrow = "arrow asc" }
+            , agility = { active = "", arrow = "arrow asc" }
+            }
+
+        Attack ->
+            { hp = { active = "", arrow = "arrow asc" }
+            , mp = { active = "", arrow = "arrow asc" }
+            , attack = { active = "active", arrow = orderBy2Arrow }
+            , agility = { active = "", arrow = "arrow asc" }
+            }
+
+        Agility ->
+            { hp = { active = "", arrow = "arrow asc" }
+            , mp = { active = "", arrow = "arrow asc" }
+            , attack = { active = "", arrow = "arrow asc" }
+            , agility = { active = "active", arrow = orderBy2Arrow }
+            }
 
 
 

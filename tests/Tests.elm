@@ -57,5 +57,19 @@ suite =
                             }
                     in
                     Expect.equal actual expected
+            , test "Mp Asc " <|
+                \_ ->
+                    let
+                        actual =
+                            sortCondition2ViewModel <| SortCondition Mp Asc
+
+                        expected =
+                            { hp = { active = "", arrow = "arrow asc" }
+                            , mp = { active = "active", arrow = "arrow asc" }
+                            , attack = { active = "", arrow = "arrow asc" }
+                            , agility = { active = "", arrow = "arrow asc" }
+                            }
+                    in
+                    Expect.equal actual expected
             ]
         ]
