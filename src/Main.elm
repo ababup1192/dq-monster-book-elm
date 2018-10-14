@@ -133,6 +133,13 @@ type alias HeaderViewModel =
 sortCondition2ViewModel : SortCondition -> HeaderViewModel
 sortCondition2ViewModel { orderField, orderBy } =
     let
+        defaultViewModel =
+            { hp = { active = "", arrow = "arrow asc" }
+            , mp = { active = "", arrow = "arrow asc" }
+            , attack = { active = "", arrow = "arrow asc" }
+            , agility = { active = "", arrow = "arrow asc" }
+            }
+
         orderBy2Arrow =
             case orderBy of
                 Asc ->
@@ -143,32 +150,16 @@ sortCondition2ViewModel { orderField, orderBy } =
     in
     case orderField of
         Hp ->
-            { hp = { active = "active", arrow = orderBy2Arrow }
-            , mp = { active = "", arrow = "arrow asc" }
-            , attack = { active = "", arrow = "arrow asc" }
-            , agility = { active = "", arrow = "arrow asc" }
-            }
+            { defaultViewModel | hp = { active = "active", arrow = orderBy2Arrow } }
 
         Mp ->
-            { hp = { active = "", arrow = "arrow asc" }
-            , mp = { active = "active", arrow = orderBy2Arrow }
-            , attack = { active = "", arrow = "arrow asc" }
-            , agility = { active = "", arrow = "arrow asc" }
-            }
+            { defaultViewModel | mp = { active = "active", arrow = orderBy2Arrow } }
 
         Attack ->
-            { hp = { active = "", arrow = "arrow asc" }
-            , mp = { active = "", arrow = "arrow asc" }
-            , attack = { active = "active", arrow = orderBy2Arrow }
-            , agility = { active = "", arrow = "arrow asc" }
-            }
+            { defaultViewModel | attack = { active = "active", arrow = orderBy2Arrow } }
 
         Agility ->
-            { hp = { active = "", arrow = "arrow asc" }
-            , mp = { active = "", arrow = "arrow asc" }
-            , attack = { active = "", arrow = "arrow asc" }
-            , agility = { active = "active", arrow = orderBy2Arrow }
-            }
+            { defaultViewModel | agility = { active = "active", arrow = orderBy2Arrow } }
 
 
 
