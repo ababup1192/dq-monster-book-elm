@@ -10,12 +10,16 @@ import Html.Attributes exposing (..)
 
 
 type alias Model =
-    {}
+    { monsters : List Monster }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( {}, Cmd.none )
+    ( { monsters =
+            [ slime, ogarasu, samayouYoroi, druido, hagreMetal, zoma ]
+      }
+    , Cmd.none
+    )
 
 
 infinity : Float
@@ -95,7 +99,11 @@ monster2ViewModel { name, hp, mp, attack, agility } =
 
 
 view : Model -> Html Msg
-view model =
+view { monsters } =
+    let
+        monstersView =
+            monsters |> List.map monster2ViewModel |> List.map monsterViewModel2View
+    in
     table []
         [ thead []
             [ tr []
@@ -119,15 +127,7 @@ view model =
                     ]
                 ]
             ]
-        , tbody [] <|
-            List.map monsterViewModel2View
-                [ MonsterViewModel "スライム" "8" "0" "9" "4"
-                , MonsterViewModel "おおがらす" "9" "0" "10" "6"
-                , MonsterViewModel "さまようよろい" "55" "0" "47" "10"
-                , MonsterViewModel "ドルイド" "35" "10" "55" "29"
-                , MonsterViewModel "はぐれメタル" "6" "∞" "55" "150"
-                , MonsterViewModel "ゾーマ" "4700" "∞" "360" "80"
-                ]
+        , tbody [] monstersView
         ]
 
 
