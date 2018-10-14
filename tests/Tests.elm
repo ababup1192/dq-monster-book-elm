@@ -4,7 +4,8 @@ import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
 import Main
     exposing
-        ( Monster
+        ( HeaderViewModel
+        , Monster
         , MonsterViewModel
         , OrderBy(..)
         , OrderField(..)
@@ -34,6 +35,20 @@ monster2ViewModelTest testCaseName monster monsterViewModel =
             Expect.equal actual expected
 
 
+sortCondition2ViewModelTest : TestCaseName -> SortCondition -> HeaderViewModel -> Test
+sortCondition2ViewModelTest testCaseName sortCondition headerViewModel =
+    test testCaseName <|
+        \_ ->
+            let
+                actual =
+                    sortCondition2ViewModel sortCondition
+
+                expected =
+                    headerViewModel
+            in
+            Expect.equal actual expected
+
+
 suite : Test
 suite =
     describe "The Main module"
@@ -43,33 +58,26 @@ suite =
             , monster2ViewModelTest "ゾーマ は ViewModel になった！(無限に注意！)" (Monster "ゾーマ" 4700 infinity 360 80) (MonsterViewModel "ゾーマ" "4700" "∞" "360" "80")
             ]
         , describe "sortCondition2ViewModel"
-            [ test "Hp Dsc " <|
-                \_ ->
-                    let
-                        actual =
-                            sortCondition2ViewModel <| SortCondition Hp Dsc
-
-                        expected =
-                            { hp = { active = "active", arrow = "arrow dsc" }
-                            , mp = { active = "", arrow = "arrow asc" }
-                            , attack = { active = "", arrow = "arrow asc" }
-                            , agility = { active = "", arrow = "arrow asc" }
-                            }
-                    in
-                    Expect.equal actual expected
-            , test "Mp Asc " <|
-                \_ ->
-                    let
-                        actual =
-                            sortCondition2ViewModel <| SortCondition Mp Asc
-
-                        expected =
-                            { hp = { active = "", arrow = "arrow asc" }
-                            , mp = { active = "active", arrow = "arrow asc" }
-                            , attack = { active = "", arrow = "arrow asc" }
-                            , agility = { active = "", arrow = "arrow asc" }
-                            }
-                    in
-                    Expect.equal actual expected
+            [ sortCondition2ViewModelTest "Hp Dsc"
+                (SortCondition Hp Dsc)
+                { hp = { active = "active", arrow = "arrow dsc" }
+                , mp = { active = "", arrow = "arrow asc" }
+                , attack = { active = "", arrow = "arrow asc" }
+                , agility = { active = "", arrow = "arrow asc" }
+                }
+            , sortCondition2ViewModelTest "Mp Asc"
+                (SortCondition Mp Asc)
+                { hp = { active = "", arrow = "arrow asc" }
+                , mp = { active = "active", arrow = "arrow asc" }
+                , attack = { active = "", arrow = "arrow asc" }
+                , agility = { active = "", arrow = "arrow asc" }
+                }
+            , sortCondition2ViewModelTest "Attack Dsc"
+                (SortCondition Attack Dsc)
+                { hp = { active = "", arrow = "arrow asc" }
+                , mp = { active = "", arrow = "arrow asc" }
+                , attack = { active = "active", arrow = "arrow dsc" }
+                , agility = { active = "", arrow = "arrow asc" }
+                }
             ]
         ]
