@@ -22,13 +22,14 @@ import Html.Attributes exposing (..)
 
 
 type alias Model =
-    { monsters : List Monster }
+    { monsters : List Monster, sortCondition : SortCondition }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { monsters =
             [ slime, ogarasu, samayouYoroi, druido, hagreMetal, zoma ]
+      , sortCondition = SortCondition Hp Asc
       }
     , Cmd.none
     )
@@ -167,18 +168,16 @@ sortCondition2ViewModel { orderField, orderBy } =
 
 
 view : Model -> Html Msg
-view { monsters } =
+view { monsters, sortCondition } =
     let
+        headerView =
+            sortCondition |> sortCondition2ViewModel |> headerViewModel2View
+
         monstersView =
             monsters |> List.map monster2ViewModel |> List.map monsterViewModel2View
     in
     table []
-        [ headerViewModel2View
-            { hp = { active = "active", arrow = "arrow dsc" }
-            , mp = { active = "", arrow = "arrow asc" }
-            , attack = { active = "", arrow = "arrow asc" }
-            , agility = { active = "", arrow = "arrow asc" }
-            }
+        [ headerView
         , tbody [] monstersView
         ]
 
