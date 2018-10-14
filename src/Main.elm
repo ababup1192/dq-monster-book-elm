@@ -84,7 +84,18 @@ zoma =
 
 sortMonsters : SortCondition -> List Monster -> List Monster
 sortMonsters { orderField, orderBy } monsters =
-    monsters
+    case orderField of
+        Hp ->
+            List.sortBy (\monster -> monster.hp) monsters
+
+        Mp ->
+            List.sortBy (\monster -> monster.mp) monsters
+
+        Attack ->
+            List.sortBy (\monster -> monster.attack) monsters
+
+        Agility ->
+            List.sortBy (\monster -> monster.agility) monsters
 
 
 type alias MonsterViewModel =
