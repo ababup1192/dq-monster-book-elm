@@ -94,6 +94,14 @@ monster2ViewModel { name, hp, mp, attack, agility } =
     { name = name, hp = hpText, mp = mpText, attack = attackText, agility = agilityText }
 
 
+type alias HeaderFieldViewModel =
+    { active : String, arrow : String }
+
+
+type alias HeaderViewModel =
+    { hp : HeaderFieldViewModel, mp : HeaderFieldViewModel, attack : HeaderFieldViewModel, agility : HeaderFieldViewModel }
+
+
 
 ---- VIEW ----
 
@@ -105,29 +113,39 @@ view { monsters } =
             monsters |> List.map monster2ViewModel |> List.map monsterViewModel2View
     in
     table []
-        [ thead []
-            [ tr []
-                [ th []
-                    [ text "なまえ" ]
-                , th [ class "" ]
-                    [ text "HP"
-                    , span [ class "arrow asc" ] []
-                    ]
-                , th [ class "" ]
-                    [ text "MP"
-                    , span [ class "arrow asc" ] []
-                    ]
-                , th [ class "" ]
-                    [ text "こうげきりょく"
-                    , span [ class "arrow asc" ] []
-                    ]
-                , th [ class "" ]
-                    [ text "すばやさ"
-                    , span [ class "arrow asc" ] []
-                    ]
+        [ headerViewModel2View
+            { hp = { active = "active", arrow = "arrow dsc" }
+            , mp = { active = "", arrow = "arrow asc" }
+            , attack = { active = "", arrow = "arrow asc" }
+            , agility = { active = "", arrow = "arrow asc" }
+            }
+        , tbody [] monstersView
+        ]
+
+
+headerViewModel2View : HeaderViewModel -> Html Msg
+headerViewModel2View { hp, mp, attack, agility } =
+    thead []
+        [ tr []
+            [ th []
+                [ text "なまえ" ]
+            , th [ class hp.active ]
+                [ text "HP"
+                , span [ class hp.arrow ] []
+                ]
+            , th [ class mp.active ]
+                [ text "MP"
+                , span [ class mp.arrow ] []
+                ]
+            , th [ class attack.active ]
+                [ text "こうげきりょく"
+                , span [ class attack.arrow ] []
+                ]
+            , th [ class agility.active ]
+                [ text "すばやさ"
+                , span [ class agility.arrow ] []
                 ]
             ]
-        , tbody [] monstersView
         ]
 
 
