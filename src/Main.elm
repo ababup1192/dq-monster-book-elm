@@ -55,6 +55,9 @@ type Msg
 changeOrder : By -> Order -> Order
 changeOrder targetBy currentOrder =
     case currentOrder of
+        Default ->
+            Order targetBy Asc
+
         Order by dir ->
             if by == targetBy && dir == Dsc then
                 Default
@@ -64,9 +67,6 @@ changeOrder targetBy currentOrder =
 
             else
                 Order targetBy Dsc
-
-        Default ->
-            Order targetBy Asc
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
