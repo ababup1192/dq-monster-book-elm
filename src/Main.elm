@@ -6,12 +6,12 @@ module Main exposing
     , Monster
     , MonsterViewModel
     , Order(..)
-    , changeSortCondition
+    , changeOrder
     , createMonstersViewModel
     , infinity
     , monster2ViewModel
     , monsterViewModel2View
-    , sortCondition2ViewModel
+    , order2ViewModel
     , sortMonsters
     )
 
@@ -52,8 +52,8 @@ type Msg
     = Sort By
 
 
-changeSortCondition : By -> Order -> Order
-changeSortCondition targetBy currentOrder =
+changeOrder : By -> Order -> Order
+changeOrder targetBy currentOrder =
     case currentOrder of
         Order by dir ->
             if by == targetBy && dir == Dsc then
@@ -73,7 +73,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ order } as model) =
     case msg of
         Sort targetBy ->
-            ( { model | order = changeSortCondition targetBy order }, Cmd.none )
+            ( { model | order = changeOrder targetBy order }, Cmd.none )
 
 
 type alias Monster =
@@ -104,10 +104,12 @@ zoma =
     Monster "ゾーマ" 4700 infinity 360 80
 
 
+ascComparison : comparable -> comparable -> Basics.Order
 ascComparison a b =
     compare a b
 
 
+dscComparison : comparable -> comparable -> Basics.Order
 dscComparison a b =
     case compare a b of
         LT ->
@@ -210,8 +212,8 @@ defaultHeaderViewModel =
     }
 
 
-sortCondition2ViewModel : Order -> HeaderViewModel
-sortCondition2ViewModel order =
+order2ViewModel : Order -> HeaderViewModel
+order2ViewModel order =
     case order of
         Default ->
             defaultHeaderViewModel
@@ -253,7 +255,7 @@ view : Model -> Html Msg
 view { monsters, order } =
     let
         headerView =
-            sortCondition2ViewModel order |> headerViewModel2View
+            order2ViewModel order |> headerViewModel2View
 
         monstersView =
             createMonstersViewModel monsters order |> List.map monsterViewModel2View
