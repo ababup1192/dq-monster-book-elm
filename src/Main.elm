@@ -1,11 +1,11 @@
 module Main exposing
-    ( HeaderViewModel
+    ( By(..)
+    , Dir(..)
+    , HeaderViewModel
     , Model
     , Monster
     , MonsterViewModel
-    , OrderBy(..)
-    , OrderField(..)
-    , SortCondition
+    , Order(..)
     , changeSortCondition
     , createMonstersViewModel
     , infinity
@@ -26,14 +26,14 @@ import Html.Events exposing (onClick)
 
 
 type alias Model =
-    { monsters : List Monster, maybeSortCondition : Maybe SortCondition }
+    { monsters : List Monster, order : Order }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { monsters =
             [ slime, ogarasu, samayouYoroi, druido, hagreMetal, zoma ]
-      , maybeSortCondition = Nothing
+      , order = Default
       }
     , Cmd.none
     )
@@ -49,31 +49,31 @@ infinity =
 
 
 type Msg
-    = Sort OrderField
+    = Sort By
 
 
-changeSortCondition : OrderField -> Maybe SortCondition -> Maybe SortCondition
-changeSortCondition targetOrderField maybeSortCondition =
-    case maybeSortCondition of
-        Just { orderField, orderBy } ->
-            if targetOrderField == orderField && orderBy == Dsc then
-                Nothing
+changeSortCondition : By -> Order -> Order
+changeSortCondition targetBy currentOrder =
+    case currentOrder of
+        Order by dir ->
+            if by == targetBy && dir == Dsc then
+                Default
 
-            else if targetOrderField /= orderField then
-                Just <| SortCondition targetOrderField Asc
+            else if by /= targetBy then
+                Order targetBy Asc
 
             else
-                Just <| SortCondition targetOrderField Dsc
+                Order targetBy Dsc
 
-        Nothing ->
-            Just <| SortCondition targetOrderField Asc
+        Default ->
+            Order targetBy Asc
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ maybeSortCondition } as model) =
+update msg ({ order } as model) =
     case msg of
-        Sort targetOrderField ->
-            ( { model | maybeSortCondition = changeSortCondition targetOrderField maybeSortCondition }, Cmd.none )
+        Sort targetBy ->
+            ( { model | order = changeSortCondition targetBy order }, Cmd.none )
 
 
 type alias Monster =
@@ -120,29 +120,34 @@ dscComparison a b =
             LT
 
 
-sortMonsters : SortCondition -> List Monster -> List Monster
-sortMonsters { orderField, orderBy } monsters =
-    let
-        comparison f m1 m2 =
-            case orderBy of
-                Asc ->
-                    ascComparison (f m1) (f m2)
+sortMonsters : Order -> List Monster -> List Monster
+sortMonsters currentOrder monsters =
+    case currentOrder of
+        Default ->
+            monsters
 
-                Dsc ->
-                    dscComparison (f m1) (f m2)
-    in
-    case orderField of
-        Hp ->
-            List.sortWith (comparison .hp) monsters
+        Order by dir ->
+            let
+                comparison f m1 m2 =
+                    case dir of
+                        Asc ->
+                            ascComparison (f m1) (f m2)
 
-        Mp ->
-            List.sortWith (comparison .mp) monsters
+                        Dsc ->
+                            dscComparison (f m1) (f m2)
+            in
+            case by of
+                Hp ->
+                    List.sortWith (comparison .hp) monsters
 
-        Attack ->
-            List.sortWith (comparison .attack) monsters
+                Mp ->
+                    List.sortWith (comparison .mp) monsters
 
-        Agility ->
-            List.sortWith (comparison .agility) monsters
+                Attack ->
+                    List.sortWith (comparison .attack) monsters
+
+                Agility ->
+                    List.sortWith (comparison .agility) monsters
 
 
 type alias MonsterViewModel =
@@ -171,20 +176,21 @@ monster2ViewModel { name, hp, mp, attack, agility } =
     { name = name, hp = hpText, mp = mpText, attack = attackText, agility = agilityText }
 
 
-type OrderField
+type By
     = Hp
     | Mp
     | Attack
     | Agility
 
 
-type OrderBy
+type Dir
     = Asc
     | Dsc
 
 
-type alias SortCondition =
-    { orderField : OrderField, orderBy : OrderBy }
+type Order
+    = Default
+    | Order By Dir
 
 
 type alias HeaderFieldViewModel =
@@ -204,58 +210,53 @@ defaultHeaderViewModel =
     }
 
 
-sortCondition2ViewModel : SortCondition -> HeaderViewModel
-sortCondition2ViewModel { orderField, orderBy } =
-    let
-        orderBy2Arrow =
-            case orderBy of
-                Asc ->
-                    "arrow asc"
+sortCondition2ViewModel : Order -> HeaderViewModel
+sortCondition2ViewModel order =
+    case order of
+        Default ->
+            defaultHeaderViewModel
 
-                Dsc ->
-                    "arrow dsc"
-    in
-    case orderField of
-        Hp ->
-            { defaultHeaderViewModel | hp = { active = "active", arrow = orderBy2Arrow } }
+        Order by dir ->
+            let
+                orderBy2Arrow =
+                    case dir of
+                        Asc ->
+                            "arrow asc"
 
-        Mp ->
-            { defaultHeaderViewModel | mp = { active = "active", arrow = orderBy2Arrow } }
+                        Dsc ->
+                            "arrow dsc"
+            in
+            case by of
+                Hp ->
+                    { defaultHeaderViewModel | hp = { active = "active", arrow = orderBy2Arrow } }
 
-        Attack ->
-            { defaultHeaderViewModel | attack = { active = "active", arrow = orderBy2Arrow } }
+                Mp ->
+                    { defaultHeaderViewModel | mp = { active = "active", arrow = orderBy2Arrow } }
 
-        Agility ->
-            { defaultHeaderViewModel | agility = { active = "active", arrow = orderBy2Arrow } }
+                Attack ->
+                    { defaultHeaderViewModel | attack = { active = "active", arrow = orderBy2Arrow } }
+
+                Agility ->
+                    { defaultHeaderViewModel | agility = { active = "active", arrow = orderBy2Arrow } }
 
 
 
 ---- VIEW ----
 
 
-createMonstersViewModel : List Monster -> Maybe SortCondition -> List MonsterViewModel
-createMonstersViewModel monsters maybeSortCondition =
-    case maybeSortCondition of
-        Just sortCondition ->
-            monsters |> sortMonsters sortCondition |> List.map monster2ViewModel
-
-        Nothing ->
-            monsters |> List.map monster2ViewModel
+createMonstersViewModel : List Monster -> Order -> List MonsterViewModel
+createMonstersViewModel monsters order =
+    monsters |> sortMonsters order |> List.map monster2ViewModel
 
 
 view : Model -> Html Msg
-view { monsters, maybeSortCondition } =
+view { monsters, order } =
     let
         headerView =
-            case maybeSortCondition of
-                Just sortCondition ->
-                    sortCondition |> sortCondition2ViewModel |> headerViewModel2View
-
-                Nothing ->
-                    defaultHeaderViewModel |> headerViewModel2View
+            sortCondition2ViewModel order |> headerViewModel2View
 
         monstersView =
-            maybeSortCondition |> createMonstersViewModel monsters |> List.map monsterViewModel2View
+            createMonstersViewModel monsters order |> List.map monsterViewModel2View
     in
     table []
         [ headerView
